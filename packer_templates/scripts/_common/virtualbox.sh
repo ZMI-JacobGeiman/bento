@@ -27,7 +27,12 @@ if ! ([ "$(uname -m)" = "aarch64" ] && [ -f /etc/os-release ] && (grep -qi 'open
 
         echo "installing the vbox additions"
         # this install script fails with non-zero exit codes for no apparent reason so we need better ways to know if it worked
-        /tmp/vbox/VBoxLinuxAdditions.run --nox11 || true
+        ARCHITECTURE="$(uname -m)" 
+        if [[ $ARCHITECTURE == *aarch64* ]]; then
+            /tmp/vbox/VBoxLinuxAdditions-arm64.run --nox11 || true
+        else
+            /tmp/vbox/VBoxLinuxAdditions.run --nox11 || true
+        fi
 
         if ! modinfo vboxsf >/dev/null 2>&1; then
             echo "Cannot find vbox kernel module. Installation of guest additions unsuccessful!"
